@@ -120,4 +120,4 @@ def sigmoidDerivative(x):
 
 network1 = network([784, 16, 16, 10], 'networkTrial1')
 trainingData, validationData, testData = editData()
-network1.train(list(trainingData)[12000:], 5, 50, cycles=1, record=True, saveData=True)
+network1.train(list(trainingData)[12000:27000], 5, 50, cycles=1, record=True, saveData=True)
