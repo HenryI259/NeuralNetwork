@@ -44,6 +44,19 @@ class network():
         cost += (i - o) ** 2
     return cost
 
+  def testAccuracy(self, testData):
+    total = 0
+    for x, y in testData:
+      if self.testNetwork(x, y):
+        total += 1
+    return total / len(testData) * 100
+
+  def averageCost(self, testData):
+    cost = 0
+    for x, y in testData:
+      cost += self.cost(x, y)
+    return cost / len(testData)
+
   def generateMiniBatches(self, trainingData, size):
     return [trainingData[x*size:(x+1)*size] for x in range(len(trainingData)//size)]
 
@@ -120,4 +133,8 @@ def sigmoidDerivative(x):
 
 network1 = network([784, 16, 16, 10], 'networkTrial1')
 trainingData, validationData, testData = editData()
-network1.train(list(trainingData)[12000:27000], 5, 50, cycles=1, record=True, saveData=True)
+#network1.train(list(trainingData)[31500:32000], 3, 50, cycles=1, record=True, saveData=True)
+
+
+print(network1.testAccuracy(list(testData)))
+#print(network1.averageCost(list(testData)))
