@@ -3,7 +3,6 @@ import gzip
 import os.path
 import random
 import numpy as np
-from helperFunctions import *
 from mnistLoader import *
 
 def expandData():

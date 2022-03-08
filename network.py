@@ -3,10 +3,12 @@ import numpy as np
 from Util.mnistLoader import editData
 import pickle
 import gzip
+import os.path
 
 class network():
   def __init__(self, layers, savedNetwork=None):
-    if savedNetwork:
+    self.savedNetwork = savedNetwork
+    if savedNetwork and os.path.exists(f"Networks/{savedNetwork}.pkl.gz"):
       f = gzip.open(f"Networks/{savedNetwork}.pkl.gz", 'rb')
       self.layers, self.weights, self.biases = pickle.load(f, encoding='latin1')
       f.close()
@@ -23,6 +25,25 @@ class network():
       activation = sigmoid(np.dot(self.weights[i], activation) + self.biases[i])
     return activation
 
+  def runNetwork(self, input):
+    output = list(self.forward(input))
+    maxValue = max(output)
+    maxIndex = output.index(maxValue)
+    return maxIndex + 1
+
+  def testNetwork(self, input, output):
+    answer = self.runNetwork(input)
+    if answer == list(output).index(1) + 1:
+        return True
+    else:
+        return False
+
+  def cost(self, input, output):
+    cost = 0
+    for i, o in zip(self.forward(input), output):
+        cost += (i - o) ** 2
+    return cost
+
   def generateMiniBatches(self, trainingData, size):
     return [trainingData[x*size:(x+1)*size] for x in range(len(trainingData)//size)]
 
@@ -38,14 +59,16 @@ class network():
           deltaB = np.add(deltaB, db)
         self.weights = [w-(nw*learningRate/miniBatchSize) for w, nw in zip(self.weights, deltaW)]
         self.biases = [b-(nb*learningRate/miniBatchSize) for b, nb in zip(self.biases, deltaB)]
-        if m%1 == 0:
-          if record:
-            print("output:")
-            print(self.forward(minibatch[0][0]))
-            print("true output:")
-            print(minibatch[0][1])
-          if saveData:
-            self.saveNetwork('network1')
+        if m%5 == 0 and record:
+          print(f"cost: {self.cost(*minibatch[0])}")
+          if self.testNetwork(*minibatch[0]):
+            print("Correct")
+          else:
+            print("Incorrect")
+        if m%10 == 0 and saveData and self.savedNetwork:
+          self.saveNetwork(self.savedNetwork)
+    if saveData and self.savedNetwork:
+      self.saveNetwork(self.savedNetwork)
 
   def backprop(self, input, output):
     activations = [input]
@@ -95,7 +118,6 @@ def sigmoidDerivative(x):
     # derivative of the sigmoid function
     return sigmoid(x)*(1-sigmoid(x))
 
-network1 = network([784, 16, 16, 10], 'network1')
+network1 = network([784, 16, 16, 10], 'networkTrial1')
 trainingData, validationData, testData = editData()
-network1.train(list(trainingData)[0:1], 2000, 1, cycles=10, record=True)
-network1.saveNetwork('network1')
+network1.train(list(trainingData)[12000:], 5, 50, cycles=1, record=True, saveData=True)
