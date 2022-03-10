@@ -81,7 +81,7 @@ class network():
         self.weights = [w-(nw*learningRate/miniBatchSize) for w, nw in zip(self.weights, deltaW)]
         self.biases = [b-(nb*learningRate/miniBatchSize) for b, nb in zip(self.biases, deltaB)]
 
-        if m%5 == 0 and saveData and self.savedNetwork:
+        if m%50 == 0 and saveData and self.savedNetwork:
           self.saveNetwork(self.savedNetwork)
     if saveData and self.savedNetwork:
       self.saveNetwork(self.savedNetwork)
@@ -128,10 +128,10 @@ def sigmoidDerivative(x):
     # derivative of the sigmoid function
     return sigmoid(x)*(1-sigmoid(x))
 
-network1 = network([784, 16, 16, 10], 'networkTrial1')
+network2 = network([784, 16, 16, 10], 'networkTrial2')
 trainingData, validationData, testData = editData()
 td, vd, testd = editExpandedData()
-network1.train(list(td)[:2500], 3, 250, cycles=1, record=True, saveData=False)
+network2.train(list(td), 3, 250, cycles=40, record=True, saveData=True)
 
-print(network1.testAccuracy(list(testData)))
-#print(network1.averageCost(list(testData)))
+print(network2.testAccuracy(list(testData)))
+#print(network2.averageCost(list(testData)))
