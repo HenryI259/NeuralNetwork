@@ -97,21 +97,17 @@ class network():
       z = np.dot(self.weights[layer], activations[layer]) + self.biases[layer]
       zs.append(z)
       activations.append(sigmoid(z))
-    for i, actives in zip(range(len(activations)),activations[::-1]):
+    for i in range(len(activations)):
       layer = len(activations)-i-1
-      for j, a in zip(range(len(actives)), actives):
-        if i == 0:
-          deltaA[layer].append(self.costDerivative(a, output[j]))
-        else:
-          da = 0
-          for k, d in zip(range(len(deltaA[layer+1])), deltaA[layer+1]):
-            da += self.weights[layer][k][j] * sigmoidDerivative(zs[layer][k]) * d
-          deltaA[layer].append(da)
-    for i, layer in zip(range(len(self.weights)), self.weights):
-      deltaW[i] = np.dot(np.array([da * dz for da, dz in zip(deltaA[i+1], sigmoidDerivative(zs[i]))]).reshape(len(zs[i]),1), activations[i].reshape(1,len(activations[i])))
-    for i, layer in zip(range(len(self.biases)), self.biases):
-      for j, b in zip(range(len(layer)), layer):
-        deltaB[i][j] = deltaA[i+1][j] * sigmoidDerivative(zs[i][j])
+      if i == 0:
+        a = activations[-1]
+        deltaA = [self.costDerivative(a[x], output[x]) for x in range(len(a))]
+        deltaB[layer-1] = np.array([da * dz for da, dz in zip(deltaA, sigmoidDerivative(zs[-1]))]).reshape(len(zs[-1]),1)
+      else:
+        dzda = np.array([da * dz for da, dz in zip(deltaA, sigmoidDerivative(zs[layer]))]).reshape(len(zs[layer]),1)
+        deltaW[layer] = np.dot(dzda, activations[layer].reshape(1,len(activations[layer])))
+        deltaA = np.dot(self.weights[layer].transpose(), dzda)
+        deltaB[layer-1] = np.array([da * dz for da, dz in zip(deltaA, sigmoidDerivative(zs[layer-1]))]).reshape(len(zs[layer-1]),1)
     return deltaW, deltaB
 
   def costDerivative(self, x, y):
@@ -135,7 +131,7 @@ def sigmoidDerivative(x):
 network1 = network([784, 16, 16, 10], 'networkTrial1')
 trainingData, validationData, testData = editData()
 td, vd, testd = editExpandedData()
-network1.train(list(td)[38750:39000], 2, 50, cycles=1, record=True, saveData=True)
+network1.train(list(td)[:2500], 3, 250, cycles=1, record=True, saveData=False)
 
 print(network1.testAccuracy(list(testData)))
 #print(network1.averageCost(list(testData)))
