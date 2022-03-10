@@ -128,10 +128,24 @@ def sigmoidDerivative(x):
     # derivative of the sigmoid function
     return sigmoid(x)*(1-sigmoid(x))
 
-network2 = network([784, 16, 16, 10], 'networkTrial2')
+network2 = network([784, 30, 16, 10], 'networkTrial3')
 trainingData, validationData, testData = editData()
 td, vd, testd = editExpandedData()
-network2.train(list(td), 3, 250, cycles=40, record=True, saveData=True)
+network2.train(list(td)[:25000], 3, 250, cycles=1, record=True, saveData=True)
 
 print(network2.testAccuracy(list(testData)))
 #print(network2.averageCost(list(testData)))
+
+"""
+test 1:
+[784, 30, 10]
+69
+
+test 2:
+[784, 16, 16, 10]
+55.65
+
+test 3:
+[784, 30, 16, 10]
+
+"""
