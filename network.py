@@ -135,8 +135,7 @@ def sigmoidDerivative(x):
 network1 = network([784, 16, 16, 10], 'networkTrial1')
 trainingData, validationData, testData = editData()
 td, vd, testd = editExpandedData()
-newData = list(trainingData)[47500:] + list(td)
-network1.train(newData, 2, 250, cycles=1, record=True, saveData=True)
+network1.train(list(td)[38750:39000], 2, 50, cycles=1, record=True, saveData=True)
 
 print(network1.testAccuracy(list(testData)))
 #print(network1.averageCost(list(testData)))
