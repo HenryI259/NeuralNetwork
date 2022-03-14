@@ -20,9 +20,12 @@ class network():
       self.weights = [np.random.randn(y, x)
                       for x, y in zip(layers[:-1], layers[1:])]
 
+    self.function = sigmoid
+    self.functionDerivative = sigmoidDerivative
+
   def forward(self, activation):
     for i in range(self.length-1):
-      activation = sigmoid(np.dot(self.weights[i], activation) + self.biases[i])
+      activation = self.function(np.dot(self.weights[i], activation) + self.biases[i])
     return activation
 
   def runNetwork(self, input):
@@ -62,8 +65,9 @@ class network():
 
   def train(self, trainingData, learningRate, miniBatchSize, cycles=1, record=False, saveData=False):
     for cycle in range(cycles):
-      for m, minibatch in zip(range(len(trainingData)//miniBatchSize), self.generateMiniBatches(trainingData, miniBatchSize)):
+      for m, minibatch in enumerate(self.generateMiniBatches(trainingData, miniBatchSize)):
         if m%5 == 0 and record:
+          print("Cycle " + str(cycle))
           print("Data set " + str(m*miniBatchSize))
           print(f"cost: {self.cost(*minibatch[0])}")
           if self.testNetwork(*minibatch[0]):
@@ -89,25 +93,24 @@ class network():
   def backprop(self, input, output):
     activations = [input]
     zs = []
-    deltaA = [[] for x in range(self.length)]
     deltaW = [np.zeros(y*x).reshape(y, x)
               for x, y in zip(self.layers[:-1], self.layers[1:])]
     deltaB = [np.zeros(y).reshape(y, 1) for y in self.layers[1:]]
     for layer in range(self.length-1):
       z = np.dot(self.weights[layer], activations[layer]) + self.biases[layer]
       zs.append(z)
-      activations.append(sigmoid(z))
+      activations.append(self.function(z))
     for i in range(len(activations)):
       layer = len(activations)-i-1
       if i == 0:
         a = activations[-1]
         deltaA = [self.costDerivative(a[x], output[x]) for x in range(len(a))]
-        deltaB[layer-1] = np.array([da * dz for da, dz in zip(deltaA, sigmoidDerivative(zs[-1]))]).reshape(len(zs[-1]),1)
+        deltaB[layer-1] = np.array([da * dz for da, dz in zip(deltaA, self.functionDerivative(zs[-1]))]).reshape(len(zs[-1]),1)
       else:
-        dzda = np.array([da * dz for da, dz in zip(deltaA, sigmoidDerivative(zs[layer]))]).reshape(len(zs[layer]),1)
+        dzda = np.array([da * dz for da, dz in zip(deltaA, self.functionDerivative(zs[layer]))]).reshape(len(zs[layer]),1)
         deltaW[layer] = np.dot(dzda, activations[layer].reshape(1,len(activations[layer])))
         deltaA = np.dot(self.weights[layer].transpose(), dzda)
-        deltaB[layer-1] = np.array([da * dz for da, dz in zip(deltaA, sigmoidDerivative(zs[layer-1]))]).reshape(len(zs[layer-1]),1)
+        deltaB[layer-1] = np.array([da * dz for da, dz in zip(deltaA, self.functionDerivative(zs[layer-1]))]).reshape(len(zs[layer-1]),1)
     return deltaW, deltaB
 
   def costDerivative(self, x, y):
@@ -128,24 +131,10 @@ def sigmoidDerivative(x):
     # derivative of the sigmoid function
     return sigmoid(x)*(1-sigmoid(x))
 
-network2 = network([784, 30, 16, 10], 'networkTrial3')
+network1 = network([784, 30, 10], 'current_network')
 trainingData, validationData, testData = editData()
 td, vd, testd = editExpandedData()
-network2.train(list(td)[:25000], 3, 250, cycles=1, record=True, saveData=True)
+network1.train(list(td), 3, 250, cycles=1, record=True, saveData=True)
 
-print(network2.testAccuracy(list(testData)))
-#print(network2.averageCost(list(testData)))
-
-"""
-test 1:
-[784, 30, 10]
-69
-
-test 2:
-[784, 16, 16, 10]
-55.65
-
-test 3:
-[784, 30, 16, 10]
-
-"""
+print(network1.testAccuracy(list(testData)))
+#print(network1.averageCost(list(testData)))
