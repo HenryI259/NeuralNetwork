@@ -1,9 +1,10 @@
 import random
 import numpy as np
-from Util.mnistLoader import editData, editExpandedData
+from Util.mnist_loader import editData, editExpandedData
 import pickle
 import gzip
 import os.path
+from Util.image_converter import imageToArray
 
 class network():
   def __init__(self, layers, savedNetwork=None):
@@ -131,10 +132,16 @@ def sigmoidDerivative(x):
     # derivative of the sigmoid function
     return sigmoid(x)*(1-sigmoid(x))
 
-network1 = network([784, 30, 10], 'current_network')
-trainingData, validationData, testData = editData()
-td, vd, testd = editExpandedData()
-network1.train(list(td), 3, 250, cycles=1, record=True, saveData=True)
 
-print(network1.testAccuracy(list(testData)))
+network1 = network([784, 30, 10], 'current_network')
+#trainingData, validationData, testData = editData()
+#td, vd, testd = editExpandedData()
+#network1.train(list(td), 3, 250, cycles=1, record=True, saveData=True)
+
+#print(network1.testAccuracy(list(testData)))
 #print(network1.averageCost(list(testData)))
+
+print(network1.forward(imageToArray('3.jpeg')))
+print(network1.runNetwork(imageToArray('3.jpeg')))
+#print(list(td)[0][0])
+#print(imageToArray('4.jpeg'))

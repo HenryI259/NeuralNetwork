@@ -3,7 +3,7 @@ import gzip
 import os.path
 import random
 import numpy as np
-from mnistLoader import *
+from mnist_loader import *
 
 def expandData():
     if os.path.exists('Data/mnist_expanded.pkl.gz'):
