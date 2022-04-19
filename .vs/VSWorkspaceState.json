@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\Data",
+    "\\Networks",
     "\\Util"
   ],
-  "SelectedNode": "\\Data\\expanded_mnist.pkl.gz",
+  "SelectedNode": "\\Networks\\first_network.pkl.gz",
   "PreviewInSolutionExplorer": false
 }
