@@ -1,10 +1,7 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\Data",
-    "\\Networks",
-    "\\Util"
+    ""
   ],
-  "SelectedNode": "\\Networks\\first_network.pkl.gz",
+  "SelectedNode": "\\network.py",
   "PreviewInSolutionExplorer": false
 }
